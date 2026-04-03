@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Resize Tool</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f4f4f4; }
+    input, button { margin: 10px; padding: 10px; font-size: 16px; }
+    canvas { border: 1px solid #ccc; margin-top: 20px; }
+    h1 { color: #333; }
+  </style>
+</head>
+<body>
+  <h1>Image Resize Tool</h1>
+  <input type="file" id="imageInput" accept="image/*"><br>
+  <input type="number" id="widthInput" placeholder="Width (px)">
+  <input type="number" id="heightInput" placeholder="Height (px)"><br>
+  <button id="resizeBtn">Resize Image</button>
+  <button id="downloadBtn" style="display:none;">Download Resized Image</button><br>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const widthInput = document.getElementById('widthInput');
+    const heightInput = document.getElementById('heightInput');
+    const resizeBtn = document.getElementById('resizeBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let img = new Image();
+
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          img.src = evt.target.result;
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+    }
+
+    resizeBtn.addEventListener('click', () => {
+      const w = parseInt(widthInput.value) || img.width;
+      const h = parseInt(heightInput.value) || img.height;
+      canvas.width = w;
+      canvas.height = h;
+      ctx.drawImage(img, 0, 0, w, h);
+      downloadBtn.style.display = 'inline';
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'resized-image.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  </script>
+</body>
+</html>
